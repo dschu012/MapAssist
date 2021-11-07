@@ -123,7 +123,7 @@ namespace MapAssist
                     if (gameData.Area != Area.None)
                     {
                         _areaData = _mapApi.GetMapData(gameData.Area);
-                        List<PointOfInterest> pointsOfInterest = PointOfInterestHandler.Get(_mapApi, _areaData);
+                        List<PointOfInterest> pointsOfInterest = PointOfInterestHandler.Get(_mapApi, _areaData, gameData.RealTombArea);
                         _compositor = new Compositor(_areaData, pointsOfInterest);
                     }
                     else

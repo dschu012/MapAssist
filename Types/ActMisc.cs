@@ -27,6 +27,6 @@ namespace MapAssist.Types
         public Difficulty GameDifficulty { get => _actMisc.GameDifficulty; }
         public Act Act { get => new Act(_actMisc.pAct); }
         public Level LevelFirst { get => new Level(_actMisc.pLevelFirst); }
-        public Area RealTombLevelId { get => _actMisc.RealTombArea;  }
+        public Area RealTombArea { get => _actMisc.RealTombArea;  }
     }
 }

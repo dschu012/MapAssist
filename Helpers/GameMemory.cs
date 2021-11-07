@@ -29,80 +29,84 @@ namespace MapAssist.Helpers
         {
             try
             {
-                var playerUnit = GameManager.PlayerUnit;
-                playerUnit.Update();
-
-                var mapSeed = playerUnit.Act.MapSeed;
-
-                if (mapSeed <= 0 || mapSeed > 0xFFFFFFFF)
+                using (var processContext = GameManager.GetProcessContext())
                 {
-                    throw new Exception("Map seed is out of bounds.");
-                }
+                    var playerUnit = GameManager.PlayerUnit;
+                    playerUnit.Update();
 
-                var actId = playerUnit.Act.ActId;
+                    var mapSeed = playerUnit.Act.MapSeed;
 
-                var gameDifficulty = playerUnit.Act.ActMisc.GameDifficulty;
-
-                if (!gameDifficulty.IsValid())
-                {
-                    throw new Exception("Game difficulty out of bounds.");
-                }
-
-                var levelId = playerUnit.Path.Room.RoomEx.Level.LevelId;
-
-                if (!levelId.IsValid())
-                {
-                    throw new Exception("Level id out of bounds.");
-                }
-
-                var mapShown = GameManager.UiSettings.MapShown;
-
-                var items = new List<Types.UnitAny>();
-                var monsters = new List<Types.UnitAny>();
-                var players = new List<Types.UnitAny>();
-                var shrines = new List<Types.UnitAny>();
-                var objects = new List<Types.UnitAny>();
-
-                foreach (var roomNear in playerUnit.Path.Room.RoomsNear)
-                {
-                    var unit = roomNear.UnitFirst;
-                    while (unit.IsValid())
+                    if (mapSeed <= 0 || mapSeed > 0xFFFFFFFF)
                     {
-                        // unit.Update();
-                        if (unit.UnitType == UnitType.Object)
-                        {
-                            objects.Add(unit);
-                        }
-                        else if (unit.IsMonster())
-                        {
-                            monsters.Add(unit);
-                        }
-                        else if (unit.UnitType == UnitType.Player && unit.IsValid())
-                        {
-                            players.Add(unit);
-                        }
-                        {
-                            items.Add(unit);
-                        }
-                        unit = unit.RoomNext;
+                        throw new Exception("Map seed is out of bounds.");
                     }
-                }
 
-                return new GameData
-                {
-                    PlayerPosition = playerUnit.Position,
-                    MapSeed = mapSeed,
-                    Area = levelId,
-                    Difficulty = gameDifficulty,
-                    MapShown = mapShown,
-                    MainWindowHandle = GameManager.MainWindowHandle,
-                    Items = items,
-                    Players = players,
-                    Monsters = monsters,
-                    Objects = objects,
-                    Shrines = shrines,
-                    PlayerName = playerUnit.Name
-                };
+                    var actId = playerUnit.Act.ActId;
+
+                    var gameDifficulty = playerUnit.Act.ActMisc.GameDifficulty;
+
+                    if (!gameDifficulty.IsValid())
+                    {
+                        throw new Exception("Game difficulty out of bounds.");
+                    }
+
+                    var levelId = playerUnit.Path.Room.RoomEx.Level.LevelId;
+
+                    if (!levelId.IsValid())
+                    {
+                        throw new Exception("Level id out of bounds.");
+                    }
+
+                    var mapShown = GameManager.UiSettings.MapShown;
+
+                    var items = new List<Types.UnitAny>();
+                    var monsters = new List<Types.UnitAny>();
+                    var players = new List<Types.UnitAny>();
+                    var shrines = new List<Types.UnitAny>();
+                    var objects = new List<Types.UnitAny>();
+
+                    foreach (var roomNear in playerUnit.Path.Room.RoomsNear)
+                    {
+                        var unit = roomNear.UnitFirst;
+                        while (unit.IsValid())
+                        {
+                            // unit.Update();
+                            if (unit.UnitType == UnitType.Object)
+                            {
+                                objects.Add(unit);
+                            }
+                            else if (unit.IsMonster())
+                            {
+                                monsters.Add(unit);
+                            }
+                            else if (unit.UnitType == UnitType.Player && unit.IsValid())
+                            {
+                                players.Add(unit);
+                            }
+                            {
+                                items.Add(unit);
+                            }
+                            unit = unit.RoomNext;
+                        }
+                    }
+
+                    return new GameData
+                    {
+                        PlayerPosition = playerUnit.Position,
+                        MapSeed = mapSeed,
+                        Area = levelId,
+                        RealTombArea = playerUnit.Act.ActMisc.RealTombArea,
+                        Difficulty = gameDifficulty,
+                        MapShown = mapShown,
+                        MainWindowHandle = GameManager.MainWindowHandle,
+                        Items = items,
+                        Players = players,
+                        Monsters = monsters,
+                        Objects = objects,
+                        Shrines = shrines,
+                        PlayerName = playerUnit.Name
+                    };
+                }
             }
             catch (Exception exception)
             {

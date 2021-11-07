@@ -95,6 +95,11 @@ namespace MapAssist.Helpers
                 areaData = GetMapDataInternal(area);
             }
 
+            if (area == Area.CanyonOfTheMagi)
+            {
+                return areaData;
+            }
+
             Area[] adjacentAreas = areaData.AdjacentLevels.Keys.ToArray();
             if (adjacentAreas.Any())
             {

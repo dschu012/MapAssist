@@ -29,6 +29,7 @@ namespace MapAssist.Types
         public uint MapSeed;
         public Difficulty Difficulty;
         public Area Area;
+        public Area RealTombArea;
         public bool MapShown;
         public IntPtr MainWindowHandle;
         public string PlayerName;

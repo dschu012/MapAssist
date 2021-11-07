@@ -38,7 +38,8 @@ namespace MapAssist.Helpers
             GameObject.InifussTree,
             GameObject.CairnStoneAlpha,
             GameObject.WirtCorpse,
-            GameObject.HellForge
+            GameObject.HellForge,
+            GameObject.NihlathakWildernessStartPosition
         };
         
         private static readonly HashSet<GameObject> GoodChests = new HashSet<GameObject>
@@ -51,7 +52,7 @@ namespace MapAssist.Helpers
             GameObject.ArcaneSmallChestRight
         };
 
-        public static List<PointOfInterest> Get(MapApi mapApi, AreaData areaData)
+        public static List<PointOfInterest> Get(MapApi mapApi, AreaData areaData, Area realTomb)
         {
             var pointOfInterest = new List<PointOfInterest>();
 
@@ -61,7 +62,7 @@ namespace MapAssist.Helpers
                     // Work out which tomb is the right once. 
                     // Load the maps for all of the tombs, and check which one has the Orifice.
                     // Declare that tomb as point of interest.
-                    Area[] tombs = new[]
+                    /*  Area[] tombs = new[]
                     {
                         Area.TalRashasTomb1, Area.TalRashasTomb2, Area.TalRashasTomb3, Area.TalRashasTomb4,
                         Area.TalRashasTomb5, Area.TalRashasTomb6, Area.TalRashasTomb7
@@ -75,7 +76,7 @@ namespace MapAssist.Helpers
                             System.Console.WriteLine($"Area found for Tomb Id: {(int)tombData.Area}");
                             realTomb = tombArea;
                         }
-                    });
+                    }); */
 
                     if (realTomb != Area.None && areaData.AdjacentLevels[realTomb].Exits.Any())
                     {
