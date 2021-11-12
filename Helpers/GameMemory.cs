@@ -35,6 +35,24 @@ namespace MapAssist.Helpers
         private static IntPtr AdrPlayerUnit = IntPtr.Zero;
         private static IntPtr PtrPlayerUnit = IntPtr.Zero;
 
+        static int FindPattern(in byte[] cbMemory, string szPattern)
+        {
+            byte[] pattern = szPattern.Trim().Split(' ').Select(token => token == "?" ? (byte)0x0 : Convert.ToByte(token, 16)).ToArray();
+            char[] szMask = szPattern.Trim().Split(' ').Select(token => token == "?" ? '?' : 'x').ToArray();
+            int patternStart = Array.IndexOf(szMask, '?');
+            byte[] patternData = cbMemory;
+
+            for (var offset = 0; offset < patternData.Length; offset++)
+            {
+                if (szMask.Where((m, b) => m == 'x' && pattern[b] != patternData[b + offset]).Any())
+                    continue;
+
+                int address = BitConverter.ToInt32(patternData, offset + patternStart);
+                return address + offset + patternStart + sizeof(int);
+            }
+            return -1;
+        }
+
         public static GameData GetGameData()
         {
             var addressBuffer = new byte[8];
@@ -58,6 +76,14 @@ namespace MapAssist.Helpers
                     WindowsExternal.OpenProcess((uint)WindowsExternal.ProcessAccessFlags.VirtualMemoryRead, false, gameProcess.Id);
                 IntPtr processAddress = gameProcess.MainModule.BaseAddress;
 
+                byte[] moduleMemory = new byte[gameProcess.MainModule.ModuleMemorySize];
+                WindowsExternal.ReadProcessMemory(processHandle, processAddress, moduleMemory, gameProcess.MainModule.ModuleMemorySize, out _);
+                Offsets.UnitTable = FindPattern(moduleMemory, "4C 8D 05 ? ? ? ? 48 63 03");
+                Offsets.InGameMap = FindPattern(moduleMemory, "44 0F B6 35 ? ? ? ? 33 D2 41 B0 01 8D 4A 0A");
+                if(Offsets.UnitTable == -1 || Offsets.InGameMap == -1)
+                {
+                    throw new Exception("Offsets not found.");
+                }
                 if (PtrPlayerUnit == IntPtr.Zero)
                 {
                     IntPtr pUnitTable = IntPtr.Add(processAddress, Offsets.UnitTable);
